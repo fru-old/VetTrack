@@ -1,0 +1,21 @@
+version: '2'
+services:
+  nodejs:
+    image: "node:latest"
+    ports:
+     - "8082:80"
+    volumes:
+     - .:/code
+    command: |
+      bash -c '
+        cd code
+        npm install --unsafe-perm
+        npm start
+      '
+    environment:
+     - DATASTORE_EMULATOR_HOST=vettrack_google-cloud-sdk_1:8879
+  google-cloud-sdk:
+    image: "google/cloud-sdk:latest"
+    command: gcloud beta emulators datastore start --project=lowresourceapps --host-port=0.0.0.0:8879
+    ports:
+     - "8879:8879"
