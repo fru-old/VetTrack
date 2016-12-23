@@ -1,0 +1,28 @@
+# start with docker-compose up --build
+# run with sudo docker run node ls
+# attach with sudo docker attach vettrack_react-native_1
+
+version: '2'
+services:
+  react-native:
+    privileged: true
+    image: "siomiz/chrome" #"dockerfile/chrome"
+    network_mode: "host"
+    devices:
+      - "/dev/bus/usb"
+    volumes:
+      - ".:/code"
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+    command: |
+      bash -c '
+        #/sbin/ip route
+        #ps aux | grep X
+        #ping 172.19.0.1
+        google-chrome --no-sandbox
+        #tail -f /dev/null
+      '
+    environment:
+      - ANDROID_HOME_old=/usr/local/android-sdk
+      - DISPLAY=:0
+    ##stdin_open: true
+    ##tty: true

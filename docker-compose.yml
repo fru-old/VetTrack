@@ -1,11 +1,50 @@
+# start with docker-compose up --build
+# run with sudo docker run node ls
+# attach with sudo docker attach vettrack_react-native_1
+
 version: '2'
 services:
+  react-native:
+    build:
+      context: .
+      dockerfile: dockerfile-react-native
+    image: "fru/react-native"
+    devices:
+      - "/dev/bus/usb"
+    volumes:
+      - ".:/code"
+      - "/tmp/.X11-unix:/tmp/.X11-unix"
+    command: |
+      bash -c '
+
+        adb start-server
+        adb devices -l
+
+        #mkdir /code/app
+        #cd /code/app
+        #npm install react
+        #yes | react-native init app
+        #npm install react --save
+
+        cd /code/app
+        #node node_modules/react-native/local-cli/cli.js start
+        #react-native start > /dev/null 2>&1 &
+        #adb reverse tcp:8081 tcp:8081
+        #react-native run-android
+        #firefox
+        google-chrome
+        #tail -f /dev/null
+      '
+    environment:
+      - ANDROID_HOME_old=/usr/local/android-sdk
+    ##stdin_open: true
+    ##tty: true
   nodejs:
     image: "node:latest"
     ports:
-     - "8082:80"
+      - "80:80"
     volumes:
-     - .:/code
+      - .:/code
     command: |
       bash -c '
         cd code
@@ -13,9 +52,9 @@ services:
         npm start
       '
     environment:
-     - DATASTORE_EMULATOR_HOST=vettrack_google-cloud-sdk_1:8879
+      - DATASTORE_EMULATOR_HOST=vettrack_google-cloud-sdk_1:8879
   google-cloud-sdk:
     image: "google/cloud-sdk:latest"
     command: gcloud beta emulators datastore start --project=lowresourceapps --host-port=0.0.0.0:8879
     ports:
-     - "8879:8879"
+      - "8879:8879"
